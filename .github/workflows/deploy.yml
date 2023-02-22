@@ -1,0 +1,38 @@
+name: Interactive Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      interactive:
+        description: "Run the workflow interactively"
+        default: true
+
+jobs:
+  interactive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for interactive flag
+        run: |
+          if [ "$INPUT_INTERACTIVE" = "true" ]; then
+            echo "Interactive mode enabled"
+          else
+            echo "Interactive mode not enabled"
+            exit 1
+          fi
+
+      - name: Confirm tag creation
+        if: steps.check.outputs.success
+        run: |
+          read -r -p "Do you want to create a release for tag $GITHUB_REF? [y/N]" response
+          if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+            echo "Creating release for tag $GITHUB_REF"
+            echo "::set-output name=confirmed::true"
+          else
+            echo "Tag creation canceled."
+          fi
+
+      - name: Create release
+        if: steps.confirm.outputs.confirmed
+        run: |
+          # Your release creation logic here
+          echo "Release created"
