@@ -5,7 +5,7 @@ on:
     inputs:
       interactive:
         description: "Run the workflow interactively"
-        default: true
+        default: "false"
 
 jobs:
   interactive:
